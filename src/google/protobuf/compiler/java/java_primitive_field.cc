@@ -258,20 +258,34 @@ GenerateInterfaceMembers(io::Printer* printer) const {
 }
 
 void PrimitiveFieldGenerator::
-GenerateMembers(io::Printer* printer) const {
+GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
   printer->Print(variables_,
-    "private $field_type$ $name$_;\n");
+    "protected $field_type$ $name$_;\n");
 
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public boolean has$capitalized_name$() {\n"
     "  return $get_has_field_bit_message$;\n"
-    "}\n");
+    "}\n"); 
 
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public $type$ get$capitalized_name$() {\n"
     "  return $name$_;\n"
+    "}\n");
+
+  // 增加set操作
+  printer->Print(variables_,
+    "$deprecation$public ");
+  printer->Print("$classname$",
+    "classname", classname
+  );
+  printer->Print(variables_, " set$capitalized_name$($type$ value) {\n"
+    "$null_check$"
+    "  $set_has_field_bit_builder$;\n"
+    "  $name$_ = value;\n"
+    "  $on_changed$\n"
+    "  return this;\n"
     "}\n");
 }
 
@@ -510,14 +524,43 @@ GenerateInterfaceMembers(io::Printer* printer) const {
 
 
 void RepeatedPrimitiveFieldGenerator::
-GenerateMembers(io::Printer* printer) const {
+GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
   printer->Print(variables_,
-    "private $field_list_type$ $name$_;\n");
+    "protected $field_list_type$ $name$_;\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public java.util.List<$boxed_type$>\n"
     "    get$capitalized_name$List() {\n"
     "  return $name$_;\n"   // note:  unmodifiable list
+    "}\n");
+
+  // 增加allAll操作
+  printer->Print("public $classname$ ",
+    "classname", classname);
+  printer->Print(variables_, "addAll$capitalized_name$(\n"
+    "    java.lang.Iterable<? extends $boxed_type$> values) {\n"
+    "  ensure$capitalized_name$IsMutable();\n"
+    // "  super.addAll(values, $name$_);\n"
+    "  $on_changed$\n"
+    "  return this;\n"
+    "}\n");
+  // 增加add单个操作
+  printer->Print("public $classname$ ",
+    "classname", classname);
+  printer->Print(variables_,
+    "add$capitalized_name$($type$ value) {\n"
+    "$null_check$"
+    "  ensure$capitalized_name$IsMutable();\n"
+    "  $name$_.add(value);\n"
+    "  $on_changed$\n"
+    "  return this;\n"
+    "}\n");
+  printer->Print(variables_,
+    "private void ensure$capitalized_name$IsMutable() {\n"
+    "  if (!$get_mutable_bit_builder$) {\n"
+    "    $name$_ = new java.util.ArrayList<$boxed_type$>($name$_);\n"
+    "    $set_mutable_bit_builder$;\n"
+    "   }\n"
     "}\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,

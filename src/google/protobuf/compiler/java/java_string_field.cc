@@ -182,15 +182,25 @@ GenerateInterfaceMembers(io::Printer* printer) const {
 }
 
 void StringFieldGenerator::
-GenerateMembers(io::Printer* printer) const {
+GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
   printer->Print(variables_,
-    "private java.lang.Object $name$_;\n");
+    "protected java.lang.Object $name$_;\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public boolean has$capitalized_name$() {\n"
     "  return $get_has_field_bit_message$;\n"
     "}\n");
-
+  // set string value
+  printer->Print("public $classname$ ",
+    "classname", classname);
+  printer->Print(variables_, "set$capitalized_name$(\n"
+    "    java.lang.String value) {\n"
+    "  $null_check$"
+    "       $set_has_field_bit_builder$;\n"
+    "  $name$_ = value;\n"
+    "  $on_changed$\n"
+    "  return this;\n"
+    "}\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public java.lang.String get$capitalized_name$() {\n"
@@ -428,9 +438,9 @@ GenerateInterfaceMembers(io::Printer* printer) const {
 
 
 void RepeatedStringFieldGenerator::
-GenerateMembers(io::Printer* printer) const {
+GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
   printer->Print(variables_,
-    "private com.google.protobuf.LazyStringList $name$_;\n");
+    "protected com.google.protobuf.LazyStringList $name$_;\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public java.util.List<java.lang.String>\n"
@@ -453,7 +463,37 @@ GenerateMembers(io::Printer* printer) const {
     "    get$capitalized_name$Bytes(int index) {\n"
     "  return $name$_.getByteString(index);\n"
     "}\n");
-
+  // add all
+  printer->Print("public $classname$ ",
+    "classname", classname
+  );
+  printer->Print(variables_, "addAll$capitalized_name$(\n"
+    "    java.lang.Iterable<java.lang.String> values) {\n"
+    "  ensure$capitalized_name$IsMutable();\n"
+    // "  super.addAll(values, $name$_);\n"
+    "  $on_changed$\n"
+    "  return this;\n"
+    "}\n");
+  // add single
+  printer->Print("public $classname$ ",
+    "classname", classname
+  );
+  printer->Print(variables_,
+    "add$capitalized_name$(\n"
+    "    java.lang.String value) {\n"
+    "$null_check$"
+    "  ensure$capitalized_name$IsMutable();\n"
+    "  $name$_.add(value);\n"
+    "  $on_changed$\n"
+    "  return this;\n"
+    "}\n");
+  printer->Print(variables_,
+    "private void ensure$capitalized_name$IsMutable() {\n"
+    "  if (!$get_mutable_bit_builder$) {\n"
+    "    $name$_ = new com.google.protobuf.LazyStringArrayList($name$_);\n"
+    "    $set_mutable_bit_builder$;\n"
+    "   }\n"
+    "}\n");
   if (descriptor_->options().packed() &&
       HasGeneratedMethods(descriptor_->containing_type())) {
     printer->Print(variables_,

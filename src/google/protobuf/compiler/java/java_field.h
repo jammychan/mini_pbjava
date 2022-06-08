@@ -58,7 +58,7 @@ class FieldGenerator {
   virtual int GetNumBitsForMessage() const = 0;
   virtual int GetNumBitsForBuilder() const = 0;
   virtual void GenerateInterfaceMembers(io::Printer* printer) const = 0;
-  virtual void GenerateMembers(io::Printer* printer) const = 0;
+  virtual void GenerateMembers(io::Printer* printer, const ::std::string& classname) const = 0;
   virtual void GenerateBuilderMembers(io::Printer* printer) const = 0;
   virtual void GenerateInitializationCode(io::Printer* printer) const = 0;
   virtual void GenerateBuilderClearCode(io::Printer* printer) const = 0;

@@ -135,9 +135,22 @@ GenerateInterfaceMembers(io::Printer* printer) const {
 }
 
 void EnumFieldGenerator::
-GenerateMembers(io::Printer* printer) const {
+GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
   printer->Print(variables_,
-    "private $type$ $name$_;\n");
+    "protected $type$ $name$_;\n");
+  printer->Print("public $classname$ ",
+    "classname", classname
+  );
+  printer->Print(variables_,
+    "set$capitalized_name$($type$ value) {\n"
+    "  if (value == null) {\n"
+    "    throw new NullPointerException();\n"
+    "  }\n"
+    "  $set_has_field_bit_builder$;\n"
+    "  $name$_ = value;\n"
+    "  $on_changed$\n"
+    "  return this;\n"
+    "}\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public boolean has$capitalized_name$() {\n"
@@ -314,9 +327,9 @@ GenerateInterfaceMembers(io::Printer* printer) const {
 }
 
 void RepeatedEnumFieldGenerator::
-GenerateMembers(io::Printer* printer) const {
+GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
   printer->Print(variables_,
-    "private java.util.List<$type$> $name$_;\n");
+    "protected java.util.List<$type$> $name$_;\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public java.util.List<$type$> get$capitalized_name$List() {\n"
@@ -333,10 +346,43 @@ GenerateMembers(io::Printer* printer) const {
     "  return $name$_.get(index);\n"
     "}\n");
 
+  // repeated field, support allAll/add
+  printer->Print("public $classname$ ",
+    "classname", classname
+  );
+  printer->Print(variables_,
+    "addAll$capitalized_name$(\n"
+    "    java.util.Collection<? extends $type$> values) {\n"
+    "  ensure$capitalized_name$IsMutable();\n"
+    // "  super.addAll(values, $name$_);\n"
+    "  $name$_.addAll(values);"
+    "  $on_changed$\n"
+    "  return this;\n"
+    "}\n");
+  printer->Print("public $classname$ ",
+    "classname", classname
+  );
+  printer->Print(variables_,
+    "add$capitalized_name$($type$ value) {\n"
+    "  if (value == null) {\n"
+    "    throw new NullPointerException();\n"
+    "  }\n"
+    "  ensure$capitalized_name$IsMutable();\n"
+    "  $name$_.add(value);\n"
+    "  $on_changed$\n"
+    "  return this;\n"
+    "}\n");
+  printer->Print(variables_, "private void ensure$capitalized_name$IsMutable() {\n"
+    "  if (!$get_mutable_bit_builder$) {\n"
+    "    $name$_ = new java.util.ArrayList<$type$>($name$_);\n"
+    "    $set_mutable_bit_builder$;\n"
+    "  }\n"
+    "}\n");
+
   if (descriptor_->options().packed() &&
       HasGeneratedMethods(descriptor_->containing_type())) {
     printer->Print(variables_,
-      "private int $name$MemoizedSerializedSize;\n");
+      "protected int $name$MemoizedSerializedSize;\n");
   }
 }
 

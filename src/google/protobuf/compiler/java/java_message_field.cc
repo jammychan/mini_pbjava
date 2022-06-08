@@ -144,9 +144,25 @@ GenerateInterfaceMembers(io::Printer* printer) const {
 }
 
 void MessageFieldGenerator::
-GenerateMembers(io::Printer* printer) const {
+GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
   printer->Print(variables_,
-    "private $type$ $name$_;\n");
+    "protected $type$ $name$_;\n");
+  printer->Print("public $classname$ ",
+    "classname", classname
+  );
+  PrintNestedBuilderFunction(printer,
+    "set$capitalized_name$($type$ value)",
+
+    "if (value == (null)) {\n"
+    "  throw new NullPointerException();\n"
+    "}\n"
+    "$name$_ = value;\n"
+    "$on_changed$\n",
+
+    "$name$Builder_.setMessage(value);\n", // 不会触发到这里的逻辑
+
+    "$set_has_field_bit_builder$;\n"
+    "return this;\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public boolean has$capitalized_name$() {\n"
@@ -254,7 +270,7 @@ GenerateBuilderMembers(io::Printer* printer) const {
     "$name$_ = value;\n"
     "$on_changed$\n",
 
-    "$name$Builder_.setMessage(value);\n",
+    "$name$Builder_.setMessage(value);\n",  // 不会触发到这里的逻辑
 
     "$set_has_field_bit_builder$;\n"
     "return this;\n");
@@ -349,7 +365,7 @@ GenerateFieldBuilderInitializationCode(io::Printer* printer)  const {
 
 void MessageFieldGenerator::
 GenerateInitializationCode(io::Printer* printer) const {
-  printer->Print(variables_, "$name$_ = $type$.getDefaultInstance();\n");
+  printer->Print(variables_, "$name$_ = $type$.getDefaultInstance();\n"); 
 }
 
 void MessageFieldGenerator::
@@ -384,12 +400,12 @@ GenerateBuildingCode(io::Printer* printer) const {
 }
 
 void MessageFieldGenerator::
-GenerateParsingCode(io::Printer* printer) const {
-  printer->Print(variables_,
-    "$type$.Builder subBuilder = null;\n"
-    "if ($get_has_field_bit_message$) {\n"
-    "  subBuilder = $name$_.toBuilder();\n"
-    "}\n");
+GenerateParsingCode(io::Printer* printer) const { // todo message多次读取的话这里会有bug
+  // printer->Print(variables_,
+  //   "$type$.Builder subBuilder = null;\n"
+  //   "if ($get_has_field_bit_message$) {\n"
+  //   "  subBuilder = $name$_.toBuilder();\n"
+  //   "}\n");
 
   if (GetType(descriptor_) == FieldDescriptor::TYPE_GROUP) {
     printer->Print(variables_,
@@ -400,11 +416,11 @@ GenerateParsingCode(io::Printer* printer) const {
       "$name$_ = input.readMessage($type$.PARSER, extensionRegistry);\n");
   }
 
-  printer->Print(variables_,
-    "if (subBuilder != null) {\n"
-    "  subBuilder.mergeFrom($name$_);\n"
-    "  $name$_ = subBuilder.buildPartial();\n"
-    "}\n");
+  // printer->Print(variables_,
+  //   "if (subBuilder != null) {\n"
+  //   "  subBuilder.mergeFrom($name$_);\n"
+  //   "  $name$_ = subBuilder.buildPartial();\n"
+  //   "}\n");
   printer->Print(variables_,
     "$set_has_field_bit_message$;\n");
 }
@@ -500,20 +516,20 @@ GenerateInterfaceMembers(io::Printer* printer) const {
 }
 
 void RepeatedMessageFieldGenerator::
-GenerateMembers(io::Printer* printer) const {
+GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
   printer->Print(variables_,
-    "private java.util.List<$type$> $name$_;\n");
+    "protected java.util.List<$type$> $name$_;\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public java.util.List<$type$> get$capitalized_name$List() {\n"
     "  return $name$_;\n"   // note:  unmodifiable list
     "}\n");
-  WriteFieldDocComment(printer, descriptor_);
-  printer->Print(variables_,
-    "$deprecation$public java.util.List<? extends $type$OrBuilder> \n"
-    "    get$capitalized_name$OrBuilderList() {\n"
-    "  return $name$_;\n"
-    "}\n");
+  // WriteFieldDocComment(printer, descriptor_);
+  // printer->Print(variables_,
+  //   "$deprecation$public java.util.List<? extends $type$OrBuilder> \n"
+  //   "    get$capitalized_name$OrBuilderList() {\n"
+  //   "  return $name$_;\n"
+  //   "}\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
     "$deprecation$public int get$capitalized_name$Count() {\n"
@@ -524,13 +540,58 @@ GenerateMembers(io::Printer* printer) const {
     "$deprecation$public $type$ get$capitalized_name$(int index) {\n"
     "  return $name$_.get(index);\n"
     "}\n");
-  WriteFieldDocComment(printer, descriptor_);
-  printer->Print(variables_,
-    "$deprecation$public $type$OrBuilder get$capitalized_name$OrBuilder(\n"
-    "    int index) {\n"
-    "  return $name$_.get(index);\n"
-    "}\n");
+  // WriteFieldDocComment(printer, descriptor_);
+  // printer->Print(variables_,
+  //   "$deprecation$public $type$OrBuilder get$capitalized_name$OrBuilder(\n"
+  //   "    int index) {\n"
+  //   "  return $name$_.get(index);\n"
+  //   "}\n");
+  
+  // add单个
+  printer->Print("public $classname$ ",
+    "classname", classname
+  );
+  PrintNestedBuilderFunction(printer,
+    "add$capitalized_name$($type$ value)",
 
+    "if (value == null) {\n"
+    "  throw new NullPointerException();\n"
+    "}\n"
+    "ensure$capitalized_name$IsMutable();\n"
+    "$name$_.add(value);\n"
+
+    "$on_changed$\n",
+
+    "$name$Builder_.addMessage(value);\n", // 这个逻辑不会触发
+
+    "return this;\n");
+  
+  // add多个
+  printer->Print("public $classname$ ",
+    "classname", classname
+  );
+  PrintNestedBuilderFunction(printer,
+    "addAll$capitalized_name$(\n"
+    "    java.util.Collection<? extends $type$> values)",
+
+    "ensure$capitalized_name$IsMutable();\n"
+    // "super.addAll(values, $name$_);\n"
+    "$on_changed$\n"
+
+    "$name$_.addAll(values);\n",
+
+    "",
+
+    "return this;\n");
+
+  printer->Print(variables_,
+    "private void ensure$capitalized_name$IsMutable() {\n"
+    "  if (!$get_mutable_bit_builder$) {\n"
+    "    $name$_ = new java.util.ArrayList<$type$>($name$_);\n"
+    "    $set_mutable_bit_builder$;\n"
+    "   }\n"
+    "}\n"
+    "\n");
 }
 
 void RepeatedMessageFieldGenerator::PrintNestedBuilderCondition(

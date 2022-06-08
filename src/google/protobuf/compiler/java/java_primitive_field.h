@@ -54,7 +54,7 @@ class PrimitiveFieldGenerator : public FieldGenerator {
   int GetNumBitsForMessage() const;
   int GetNumBitsForBuilder() const;
   void GenerateInterfaceMembers(io::Printer* printer) const;
-  void GenerateMembers(io::Printer* printer) const;
+  void GenerateMembers(io::Printer* printer, const ::std::string& classname) const;
   void GenerateBuilderMembers(io::Printer* printer) const;
   void GenerateInitializationCode(io::Printer* printer) const;
   void GenerateBuilderClearCode(io::Printer* printer) const;
@@ -89,7 +89,7 @@ class RepeatedPrimitiveFieldGenerator : public FieldGenerator {
   int GetNumBitsForMessage() const;
   int GetNumBitsForBuilder() const;
   void GenerateInterfaceMembers(io::Printer* printer) const;
-  void GenerateMembers(io::Printer* printer) const;
+  void GenerateMembers(io::Printer* printer, const ::std::string& classname) const;
   void GenerateBuilderMembers(io::Printer* printer) const;
   void GenerateInitializationCode(io::Printer* printer) const;
   void GenerateBuilderClearCode(io::Printer* printer) const;

@@ -200,25 +200,25 @@ void FileGenerator::Generate(io::Printer* printer) {
 
   // -----------------------------------------------------------------
 
-  printer->Print(
-    "public static void registerAllExtensions(\n"
-    "    com.google.protobuf.ExtensionRegistry$lite$ registry) {\n",
-    "lite", HasDescriptorMethods(file_) ? "" : "Lite");
+  // printer->Print(
+  //   "public static void registerAllExtensions(\n"
+  //   "    com.google.protobuf.ExtensionRegistry$lite$ registry) {\n",
+  //   "lite", HasDescriptorMethods(file_) ? "" : "Lite");
 
-  printer->Indent();
+  // printer->Indent();
 
-  for (int i = 0; i < file_->extension_count(); i++) {
-    ExtensionGenerator(file_->extension(i)).GenerateRegistrationCode(printer);
-  }
+  // for (int i = 0; i < file_->extension_count(); i++) {
+  //   ExtensionGenerator(file_->extension(i)).GenerateRegistrationCode(printer);
+  // }
 
-  for (int i = 0; i < file_->message_type_count(); i++) {
-    MessageGenerator(file_->message_type(i))
-      .GenerateExtensionRegistrationCode(printer);
-  }
+  // for (int i = 0; i < file_->message_type_count(); i++) {
+  //   MessageGenerator(file_->message_type(i))
+  //     .GenerateExtensionRegistrationCode(printer);
+  // }
 
-  printer->Outdent();
-  printer->Print(
-    "}\n");
+  // printer->Outdent();
+  // printer->Print(
+  //   "}\n");
 
   // -----------------------------------------------------------------
 
@@ -228,7 +228,7 @@ void FileGenerator::Generate(io::Printer* printer) {
     }
     for (int i = 0; i < file_->message_type_count(); i++) {
       MessageGenerator messageGenerator(file_->message_type(i));
-      messageGenerator.GenerateInterface(printer);
+      // messageGenerator.GenerateInterface(printer);
       messageGenerator.Generate(printer);
     }
     if (HasGenericServices(file_)) {
