@@ -331,7 +331,7 @@ void MessageGenerator::Generate(io::Printer* printer) {
     if (HasDescriptorMethods(descriptor_)) {
       printer->Print(
         "public $static$ class $classname$ extends\n"
-        "    com.GPXX.Proto.base.GeneratedMessageLiteBase\n"
+        "    com.mini_pbjava.GeneratedMessageLiteBase\n"
         "    {\n",  //implements $classname$OrBuilder 
         "static", is_own_file ? "" : "static",
         "classname", descriptor_->name());
@@ -339,7 +339,7 @@ void MessageGenerator::Generate(io::Printer* printer) {
     } else {
       printer->Print(
         "public $static$ class $classname$ extends\n"
-        "    com.GPXX.Proto.base.GeneratedMessageLiteBase\n"
+        "    com.mini_pbjava.GeneratedMessageLiteBase\n"
         "    {\n",  //implements $classname$OrBuilder 
         "static", is_own_file ? "" : "static",
         "classname", descriptor_->name());
