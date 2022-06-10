@@ -1,0 +1,10 @@
+syntax = "proto2";
+option optimize_for=LITE_RUNTIME;
+package tutorial;
+
+option java_package = "com.example.tutorial";
+option java_outer_classname = "PBPerson";
+
+message Person {
+  optional string name = 1;
+}
