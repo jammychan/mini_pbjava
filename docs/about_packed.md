@@ -1,6 +1,6 @@
-### 关于packed配置
+## 关于packed规则
 
-只支持原生字段primitive fields，即string, messsage等字段都不支持packed。以下是packed分别为true/false，在序列化的不同代码。
+packed规则只支持原生字段primitive fields，即string, messsage等字段都不支持packed。以下是packed分别为true/false，在序列化的不同代码。
 
 ```proto
 message Person {
@@ -43,3 +43,32 @@ public void writeTo(com.google.protobuf.CodedOutputStream output)
 }
 ```
 
+#### 关于解析
+
+不管packed为true/false, 解析为message的逻辑上，都是有针对packed=true的逻辑。
+
+```java
+case 16: {
+  // for packed = false
+  if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+    childAges_ = new java.util.ArrayList<java.lang.Integer>();
+    mutable_bitField0_ |= 0x00000002;
+  }
+  childAges_.add(input.readUInt32());
+  break;
+}
+case 18: {
+  // for packed = true
+  int length = input.readRawVarint32();
+  int limit = input.pushLimit(length);
+  if (!((mutable_bitField0_ & 0x00000002) == 0x00000002) && input.getBytesUntilLimit() > 0) {
+    childAges_ = new java.util.ArrayList<java.lang.Integer>();
+    mutable_bitField0_ |= 0x00000002;
+  }
+  while (input.getBytesUntilLimit() > 0) {
+    childAges_.add(input.readUInt32());
+  }
+  input.popLimit(limit);
+  break;
+}
+```
