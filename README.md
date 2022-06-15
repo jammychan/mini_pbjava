@@ -6,7 +6,8 @@
 PS: 
 
 1. 去掉Builder等接口和类，Builder相关的接口无法使用。
-2. 支持了java。
+2. 只支持了java。
+3. 只支持了lite runtime。
 
 #### 对比
 
