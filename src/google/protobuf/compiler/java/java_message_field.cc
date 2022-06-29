@@ -480,7 +480,7 @@ RepeatedMessageFieldGenerator(const FieldDescriptor* descriptor,
 RepeatedMessageFieldGenerator::~RepeatedMessageFieldGenerator() {}
 
 int RepeatedMessageFieldGenerator::GetNumBitsForMessage() const {
-  return 0;
+  return 1;
 }
 
 int RepeatedMessageFieldGenerator::GetNumBitsForBuilder() const {

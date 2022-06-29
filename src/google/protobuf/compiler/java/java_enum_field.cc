@@ -306,7 +306,7 @@ RepeatedEnumFieldGenerator(const FieldDescriptor* descriptor,
 RepeatedEnumFieldGenerator::~RepeatedEnumFieldGenerator() {}
 
 int RepeatedEnumFieldGenerator::GetNumBitsForMessage() const {
-  return 0;
+  return 1;
 }
 
 int RepeatedEnumFieldGenerator::GetNumBitsForBuilder() const {

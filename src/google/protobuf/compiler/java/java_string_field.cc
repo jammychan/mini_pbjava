@@ -411,7 +411,7 @@ RepeatedStringFieldGenerator(const FieldDescriptor* descriptor,
 RepeatedStringFieldGenerator::~RepeatedStringFieldGenerator() {}
 
 int RepeatedStringFieldGenerator::GetNumBitsForMessage() const {
-  return 0;
+  return 1;
 }
 
 int RepeatedStringFieldGenerator::GetNumBitsForBuilder() const {
@@ -471,6 +471,7 @@ GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
     "    java.lang.Iterable<java.lang.String> values) {\n"
     "  ensure$capitalized_name$IsMutable();\n"
     // "  super.addAll(values, $name$_);\n"
+    "  $name$_.addAll(values);\n"
     "  $on_changed$\n"
     "  return this;\n"
     "}\n");

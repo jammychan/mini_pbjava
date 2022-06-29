@@ -502,7 +502,7 @@ RepeatedPrimitiveFieldGenerator(const FieldDescriptor* descriptor,
 RepeatedPrimitiveFieldGenerator::~RepeatedPrimitiveFieldGenerator() {}
 
 int RepeatedPrimitiveFieldGenerator::GetNumBitsForMessage() const {
-  return 0;
+  return 1;
 }
 
 int RepeatedPrimitiveFieldGenerator::GetNumBitsForBuilder() const {
@@ -541,6 +541,7 @@ GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
     "    java.lang.Iterable<? extends $boxed_type$> values) {\n"
     "  ensure$capitalized_name$IsMutable();\n"
     // "  super.addAll(values, $name$_);\n"
+    "  $name$_.addAll(values);\n"
     "  $on_changed$\n"
     "  return this;\n"
     "}\n");
