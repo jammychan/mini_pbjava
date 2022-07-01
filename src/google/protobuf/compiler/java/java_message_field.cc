@@ -153,7 +153,7 @@ GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
   PrintNestedBuilderFunction(printer,
     "set$capitalized_name$($type$ value)",
 
-    "if (value == (null)) {\n"
+    "if (value == null) {\n"
     "  throw new NullPointerException();\n"
     "}\n"
     "$name$_ = value;\n"
