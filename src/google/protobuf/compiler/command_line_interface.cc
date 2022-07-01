@@ -1181,7 +1181,7 @@ bool CommandLineInterface::GenerateOutput(
     GeneratorContext* generator_context) {
   // Call the generator.
   string error;
-  if (output_directive.generator == NULL) {
+  if (output_directive.generator == NULL) { // generator: CodeGenerator
     // This is a plugin.
     GOOGLE_CHECK(HasPrefixString(output_directive.name, "--") &&
           HasSuffixString(output_directive.name, "_out"))
@@ -1207,6 +1207,7 @@ bool CommandLineInterface::GenerateOutput(
       parameters.append(generator_parameters_[output_directive.name]);
     }
     for (int i = 0; i < parsed_files.size(); i++) {
+      cout << i << " " << parsed_files[i]->name() << endl;
       if (!output_directive.generator->Generate(parsed_files[i], parameters,
                                                 generator_context, &error)) {
         // Generator returned an error.
