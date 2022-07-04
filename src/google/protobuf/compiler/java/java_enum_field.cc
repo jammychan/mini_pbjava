@@ -390,7 +390,7 @@ GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
   if (descriptor_->options().packed() &&
       HasGeneratedMethods(descriptor_->containing_type())) {
     printer->Print(variables_,
-      "protected int $name$MemoizedSerializedSize;\n");
+      "private int $name$MemoizedSerializedSize = -1;\n");
   }
 }
 
@@ -611,11 +611,11 @@ GenerateSerializedSizeCode(io::Printer* printer) const {
     "size += dataSize;\n");
   if (descriptor_->options().packed()) {
     printer->Print(variables_,
-      "if (!get$capitalized_name$List().isEmpty()) {"
+      "if (!get$capitalized_name$List().isEmpty()) {\n"
       "  size += $tag_size$;\n"
       "  size += com.google.protobuf.CodedOutputStream\n"
       "    .computeRawVarint32Size(dataSize);\n"
-      "}");
+      "}\n");
   } else {
     printer->Print(variables_,
       "size += $tag_size$ * $name$_.size();\n");
