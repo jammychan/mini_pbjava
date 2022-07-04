@@ -93,7 +93,7 @@ void EnumGenerator::Generate(io::Printer* printer) {
   }
 
   printer->Print(
-    ";\n"
+    // ";\n"
     "\n");
 
   // -----------------------------------------------------------------

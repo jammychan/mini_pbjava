@@ -529,8 +529,7 @@ GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
     "protected $field_list_type$ $name$_;\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
-    "$deprecation$public java.util.List<$boxed_type$>\n"
-    "    get$capitalized_name$List() {\n"
+    "$deprecation$public java.util.List<$boxed_type$> get$capitalized_name$List() {\n"
     "  return $name$_;\n"   // note:  unmodifiable list
     "}\n");
 

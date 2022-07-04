@@ -145,8 +145,25 @@ GenerateInterfaceMembers(io::Printer* printer) const {
 
 void MessageFieldGenerator::
 GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
+  // property
   printer->Print(variables_,
     "protected $type$ $name$_;\n");
+  
+  // has
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+    "$deprecation$public boolean has$capitalized_name$() {\n"
+    "  return $get_has_field_bit_message$;\n"
+    "}\n");
+  
+  // get
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+    "$deprecation$public $type$ get$capitalized_name$() {\n"
+    "  return $name$_;\n"
+    "}\n");
+  
+  // set
   printer->Print("public $classname$ ",
     "classname", classname
   );
@@ -156,23 +173,14 @@ GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
     "if (value == null) {\n"
     "  throw new NullPointerException();\n"
     "}\n"
+    "$set_has_field_bit_builder$;\n"
     "$name$_ = value;\n"
     "$on_changed$\n",
 
     "$name$Builder_.setMessage(value);\n", // 不会触发到这里的逻辑
 
-    "$set_has_field_bit_builder$;\n"
+    ""
     "return this;\n");
-  WriteFieldDocComment(printer, descriptor_);
-  printer->Print(variables_,
-    "$deprecation$public boolean has$capitalized_name$() {\n"
-    "  return $get_has_field_bit_message$;\n"
-    "}\n");
-  WriteFieldDocComment(printer, descriptor_);
-  printer->Print(variables_,
-    "$deprecation$public $type$ get$capitalized_name$() {\n"
-    "  return $name$_;\n"
-    "}\n");
 
   if (HasNestedBuilders(descriptor_->containing_type())) {
     WriteFieldDocComment(printer, descriptor_);

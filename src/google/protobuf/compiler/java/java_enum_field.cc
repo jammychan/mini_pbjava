@@ -136,8 +136,25 @@ GenerateInterfaceMembers(io::Printer* printer) const {
 
 void EnumFieldGenerator::
 GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
+  // property
   printer->Print(variables_,
     "protected $type$ $name$_;\n");
+
+  // has 
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+    "$deprecation$public boolean has$capitalized_name$() {\n"
+    "  return $get_has_field_bit_message$;\n"
+    "}\n");
+
+  // get
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+    "$deprecation$public $type$ get$capitalized_name$() {\n"
+    "  return $name$_;\n"
+    "}\n");
+
+  // set
   printer->Print("public $classname$ ",
     "classname", classname
   );
@@ -150,16 +167,6 @@ GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
     "  $name$_ = value;\n"
     "  $on_changed$\n"
     "  return this;\n"
-    "}\n");
-  WriteFieldDocComment(printer, descriptor_);
-  printer->Print(variables_,
-    "$deprecation$public boolean has$capitalized_name$() {\n"
-    "  return $get_has_field_bit_message$;\n"
-    "}\n");
-  WriteFieldDocComment(printer, descriptor_);
-  printer->Print(variables_,
-    "$deprecation$public $type$ get$capitalized_name$() {\n"
-    "  return $name$_;\n"
     "}\n");
 }
 
@@ -335,16 +342,6 @@ GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
     "$deprecation$public java.util.List<$type$> get$capitalized_name$List() {\n"
     "  return $name$_;\n"   // note:  unmodifiable list
     "}\n");
-  WriteFieldDocComment(printer, descriptor_);
-  printer->Print(variables_,
-    "$deprecation$public int get$capitalized_name$Count() {\n"
-    "  return $name$_.size();\n"
-    "}\n");
-  WriteFieldDocComment(printer, descriptor_);
-  printer->Print(variables_,
-    "$deprecation$public $type$ get$capitalized_name$(int index) {\n"
-    "  return $name$_.get(index);\n"
-    "}\n");
 
   // repeated field, support allAll/add
   printer->Print("public $classname$ ",
@@ -377,6 +374,17 @@ GenerateMembers(io::Printer* printer, const ::std::string& classname) const {
     "    $name$_ = new java.util.ArrayList<$type$>($name$_);\n"
     "    $set_mutable_bit_builder$;\n"
     "  }\n"
+    "}\n");
+
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+    "$deprecation$public int get$capitalized_name$Count() {\n"
+    "  return $name$_.size();\n"
+    "}\n");
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+    "$deprecation$public $type$ get$capitalized_name$(int index) {\n"
+    "  return $name$_.get(index);\n"
     "}\n");
 
   if (descriptor_->options().packed() &&
