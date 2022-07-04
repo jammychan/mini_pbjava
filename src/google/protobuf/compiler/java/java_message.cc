@@ -1382,7 +1382,7 @@ void MessageGenerator::GenerateParsingConstructor(io::Printer* printer) {
   // Make repeated field list immutable.
   for (int i = 0; i < descriptor_->field_count(); i++) {
     const FieldDescriptor* field = sorted_fields[i];
-    field_generators_.get(field).GenerateParsingDoneCode(printer);
+    // field_generators_.get(field).GenerateParsingDoneCode(printer); // finally code, not more immutable
   }
 
   // Make unknown fields immutable.
