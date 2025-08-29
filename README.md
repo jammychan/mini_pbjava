@@ -4,7 +4,6 @@
 适用于对java类方法数有严格要求的项目。
 
 PS: 
-
 1. 去掉Builder等接口和类，Builder相关的接口无法使用。
 2. 只支持了java。
 3. 只支持了lite runtime。
